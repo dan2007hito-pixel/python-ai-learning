@@ -16,4 +16,4 @@ print(arr)
 # (1,0,2) → đổi trục 0 và trục 1, trục 2 giữ nguyên.
 # (2,1,0) → đưa trục 2 lên đầu, rồi đến trục 1, cuối cùng là trục 0.
 print('--------------------------')
-print(arr.swapaxes(1, 2))
+print(arr.swapaxes(1, 2)) #Đổi ngang thành dọc, dọc thành ngang

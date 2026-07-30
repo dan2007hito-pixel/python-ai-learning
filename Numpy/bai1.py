@@ -21,4 +21,4 @@ arr = np.arange(100) # Tao 1 mang co 100 phan tu bat dau tu 0
 # print(arr[arrMask]) #Lấy các phần tử vị trí true
 
 test_a = np.array([1, 4, 0, 2, 3, 8, 9, 7])
-print(test_a>3)
+# print(test_a > 3) # Thêm đk, trả về true, false

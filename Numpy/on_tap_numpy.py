@@ -65,4 +65,77 @@ books = np.array([
 ], dtype=book)
 
 print(books)
+
+print('----------B11----------')
 print(books["title"])
+
+print('----------B12----------')
+arr_b12 = np.arange(12)
+print(arr_b12)
+arr_b12 = arr_b12.reshape(4,3)
+print(arr_b12)
+
+print('----------B13----------')
+# Tạo mảng
+arr_b13 = np.arange(6)
+
+# In thông tin flags
+print(arr_b13.flags)
+
+print('----------B14----------')
+a_b14 = np.zeros(5)
+b_b14 = np.zeros(5, int)
+print(a_b14)
+print(b_b14)
+
+print('----------B15----------')
+arr_b15 = np.ones((2,2), dtype=int)
+print(arr_b15)
+
+print('----------B16----------')
+arr_b16 = np.empty((2,3), dtype=int)
+print(arr_b16)
+
+print('----------B17----------')
+arr_b17 = np.zeros((3,3), order='C')
+print(arr_b17.flags)
+
+print('----------B18----------')
+dt = np.dtype([
+    ('x','i4'),
+    ('y','i4')
+])
+
+arr_b18 = np.zeros((2,2), dtype=dt)
+
+print(arr_b18)
+
+print('----------B19----------')
+a_b19 = np.asarray([1.5,2.5,3.5])
+
+b_b19 = np.asarray((10,20,30))
+
+print(a_b19)
+print(a_b19.dtype)
+
+print(b_b19)
+
+print('----------B20----------')
+arr_b20 = np.asarray([
+    (1,2),
+    (3,4)
+])
+
+print(arr_b20)
+
+print(arr_b20.shape)
+
+# Hàm	        Chức năng 	                          Ví dụ
+# arr.flags	    Xem trạng thái bộ nhớ của mảng	      print(arr.flags)
+# np.zeros()	Tạo mảng toàn số 0	                  np.zeros((2,3))
+# np.ones()	    Tạo mảng toàn số 1	                  np.ones((2,2))
+# np.empty()	Tạo mảng chưa khởi tạo giá trị	      np.empty((3,2))
+# order='C'	    Lưu dữ liệu theo hàng (Row-major)	  np.zeros((3,3), order='C')
+# order='F'	    Lưu dữ liệu theo cột (Column-major)	  np.zeros((3,3), order='F')
+# np.dtype()	Tạo kiểu dữ liệu có cấu trúc	      np.dtype([('x','i4'),('y','i4')])
+# np.asarray()	Chuyển list, tuple... thành ndarray	  np.asarray([1,2,3])
