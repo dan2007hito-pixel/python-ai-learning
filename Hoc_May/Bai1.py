@@ -80,24 +80,24 @@ x_train, x_test, y_train, y_test = train_test_split(data['data'], data['target']
 
 model = DecisionTreeClassifier(criterion='entropy')
 model.fit(x_train, y_train)
-# print(
-# model.score(x_test, y_test))
+# print(model.score(x_test, y_test))
 
 y_pred = model.predict(x_test)
 # print(y_pred)
 # print(y_test)
+
+#-----------------------
 y_pred_2d = y_pred.reshape(len(y_pred),1)
 y_test_2d = y_test.reshape(len(y_test),1)
-
-df1 = pd.DataFrame(y_pred_2d, columns=['pred'])
-df2 = pd.DataFrame(y_pred_2d, columns=['real'])
-
-df_concat = pd.concat([df1, df2], axis=1)
-# df_concat[df_concat['pred'] == df_concat['real']]
-
 # print(y_pred_2d)
+
+#-----------------------
+df1 = pd.DataFrame(y_pred_2d, columns=['pred'])
+df2 = pd.DataFrame(y_test_2d, columns=['real'])
 print(df1)
 print(df2)
+#-----------------------
 
+df_concat = pd.concat([df1, df2], axis=1)
 print(df_concat[df_concat['pred'] == df_concat['real']].shape[0] / df_concat.shape[0])
 
