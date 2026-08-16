@@ -15,5 +15,6 @@ x_test = scaler.transform(x_test)
 model = DecisionTreeClassifier(criterion='entropy')
 model.fit(x_train, y_train)
 print(model.score(x_test, y_test))
+
 # Tương tự bên kia (Sửa dụng để xem nó có tốt hơn không)
 

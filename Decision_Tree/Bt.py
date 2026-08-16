@@ -25,3 +25,4 @@ mse = mean_squared_error(y_test, y_pred)
 
 print('Score: ', score)
 print('MSE: ', mse)
+
