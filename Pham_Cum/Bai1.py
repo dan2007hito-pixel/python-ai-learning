@@ -117,3 +117,4 @@ plt.show()
 
 lables_moons = fcluster(myLinkage_moons, 2, criterion='maxclust')
 print(pd.Series(lables_moons).value_counts())
+
