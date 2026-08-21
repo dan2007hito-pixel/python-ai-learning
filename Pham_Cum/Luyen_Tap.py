@@ -1,37 +1,45 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.datasets import load_iris
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
+
+print('---------------- Dữ liệu Iris ----------------')
 iris = load_iris()
-iris_data = iris.data
-iris_data_pd = pd.DataFrame(iris_data, columns=iris.feature_names)
-print(iris.target)
+iris_data = pd.DataFrame(iris.data, columns=iris.feature_names)
+features = iris_data.iloc[:, 2:4]
 
-linkage=["complete", "average", "single"]
+print('Hai thuộc tính dùng để phân cụm: petal length và petal width')
+print(features.head())
 
-for idx, i in enumerate(linkage):
-    plt.figure(idx)
-    hier = AgglomerativeClustering(n_clusters=3, linkage=i, metric="euclidean")
-    hier.fit(iris_data_pd.iloc[:, 2:4])
-    plt.scatter(iris_data_pd.iloc[:, 2], iris_data_pd.iloc[:, 3], c=hier.labels_)
-    plt.title("Clustering" + i)
-    plt.xlabel('petal length')
-    plt.ylabel('petal width')
+linkage_methods = ['complete', 'average', 'single']
+
+for method in linkage_methods:
+    print(f'------- Agglomerative Clustering: {method} linkage -------')
+    model = AgglomerativeClustering(
+        n_clusters=3,
+        linkage=method,
+        metric='euclidean',
+    )
+    cluster_labels = model.fit_predict(features)
+
+    plt.figure(figsize=(7, 5))
+    plt.scatter(features.iloc[:, 0], features.iloc[:, 1], c=cluster_labels)
+    plt.title(f'Iris: {method} linkage')
+    plt.xlabel('petal length (cm)')
+    plt.ylabel('petal width (cm)')
     plt.show()
-    
-from scipy.cluster import hierarchy
 
-hierar = hierarchy.linkage(iris_data_pd.iloc[:, 2:4], 'complete')
-plt.figure(figsize=(20,10))
-dh = dendrogram(hierar)
+    print(pd.Series(cluster_labels).value_counts().sort_index())
+
+print('---------------- Dendrogram ----------------')
+linkage_iris = linkage(features, method='complete')
+plt.figure(figsize=(20, 10))
+dendrogram(linkage_iris)
+plt.title('Iris: Dendrogram (complete linkage)')
 plt.show()
 
-
-labels = fcluster(hierar, 3, criterion='maxclust')
-pd.Series(labels).value_counts()
-
-hierar.data
+labels_tree = fcluster(linkage_iris, 3, criterion='maxclust')
+print('Số phần tử trong từng cụm:')
+print(pd.Series(labels_tree).value_counts().sort_index())

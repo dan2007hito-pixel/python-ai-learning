@@ -1,120 +1,81 @@
-# Phân cụm: Kỹ thuật phân chia dữ liệu chưa được gắn nhãn và chưa được
-# phân loại thành các nhóm tương tự dựa trên các giá trị được quan sát đã cho
-
-# 1. Phân cụm theo phân cấp
-# a. Phân cụm tích tụ
-# Từ dưới lên
-# Bắt đầu với n cụm để dần dần kết tụ các cụm tương tự cho đến khi
-# không còn lại một cụm cuối cùng
-#
-# b. Phân cụm chia
-# Từ trên xuống
-# Bắt đầu từ 1 cụm duy nhất bao gồm tất cả các bản ghi
-# và chia dần thành n cụm
-
-
-from sklearn.datasets import make_blobs, make_moons
 import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
+from sklearn.cluster import AgglomerativeClustering
+from sklearn.datasets import make_blobs, make_moons
 
-fig, ax = plt.subplots(2,2)
-# ============================================================
-# 1. DATASET MAKE_BLOBS - DỮ LIỆU GỐC
-# ============================================================
 
-x1, label1 = make_blobs(
+# Phân cụm là kỹ thuật chia dữ liệu chưa gắn nhãn thành các nhóm có đặc điểm
+# tương tự nhau.
+#
+# Phân cụm phân cấp:
+# - Tích tụ (bottom-up): bắt đầu từ từng điểm dữ liệu rồi gộp dần thành cụm.
+# - Chia (top-down): bắt đầu từ một cụm lớn rồi tách dần thành các cụm nhỏ.
+
+
+print('---------------- Dữ liệu mẫu ----------------')
+
+# Dữ liệu gồm các cụm tách biệt rõ ràng.
+x_blobs, labels_blobs = make_blobs(
     n_samples=200,
     n_features=2,
-    centers=2,
-    cluster_std=5,
-    random_state=123
+    centers=4,
+    cluster_std=1.5,
+    random_state=123,
 )
 
-ax[0,0].scatter(x1[:, 0], x1[:, 1], c=label1, alpha=0.7)
-ax[0,0].set_title('Dataset #1: Original')
-
-
-# ============================================================
-# 2. DATASET MAKE_MOONS - DỮ LIỆU GỐC
-# ============================================================
-
-x2, label2 = make_moons(
+# Dữ liệu có dạng hai nửa vòng tròn.
+x_moons, labels_moons = make_moons(
     n_samples=200,
     noise=0.08,
-    random_state=123
+    random_state=123,
 )
 
-ax[0,1].scatter(x2[:, 0], x2[:, 1], c=label2, alpha=0.7)
-ax[0,1].set_title('Dataset #2: Original')
+fig, axes = plt.subplots(2, 2, figsize=(12, 9))
 
-# ============================================================
-# 3. AGGLOMERATIVE CLUSTERING - MAKE_BLOBS
-# ============================================================
+axes[0, 0].scatter(x_blobs[:, 0], x_blobs[:, 1], c=labels_blobs, alpha=0.7)
+axes[0, 0].set_title('make_blobs: nhãn gốc')
 
-from sklearn.cluster import AgglomerativeClustering
-import pandas as pd
+axes[0, 1].scatter(x_moons[:, 0], x_moons[:, 1], c=labels_moons, alpha=0.7)
+axes[0, 1].set_title('make_moons: nhãn gốc')
 
+print('------- Agglomerative Clustering: make_blobs -------')
+model_blobs = AgglomerativeClustering(n_clusters=4)
+labels_blobs_pred = model_blobs.fit_predict(x_blobs)
 
-aggle = AgglomerativeClustering(n_clusters=4)
-aggle.fit(x1)
+axes[1, 0].scatter(x_blobs[:, 0], x_blobs[:, 1], c=labels_blobs_pred, alpha=0.7)
+axes[1, 0].set_title('make_blobs: phân cụm tích tụ')
+print(pd.Series(labels_blobs_pred).value_counts().sort_index())
 
-myColor = {
-    0: 'red',
-    1: 'blue',
-    2: 'green',
-    3: 'yellow'
-}
+print('------- Agglomerative Clustering: make_moons -------')
+model_moons = AgglomerativeClustering(n_clusters=2, linkage='single')
+labels_moons_pred = model_moons.fit_predict(x_moons)
 
-ax[1,0].scatter(
-    x1[:, 0],
-    x1[:, 1],
-    c=pd.Series(aggle.labels_).apply(lambda x: myColor[x]),
-    alpha=0.7
-)
+axes[1, 1].scatter(x_moons[:, 0], x_moons[:, 1], c=labels_moons_pred, alpha=0.7)
+axes[1, 1].set_title('make_moons: phân cụm tích tụ')
+print(pd.Series(labels_moons_pred).value_counts().sort_index())
 
-ax[1,0].set_title('Dataset make_blobs: AgglomerativeClustering')
-
-# ============================================================
-# 4. AGGLOMERATIVE CLUSTERING - MAKE_MOONS
-# ============================================================
-
-aggle_moons = AgglomerativeClustering(n_clusters=2, linkage='single')
-aggle_moons.fit(x2)
-
-myColor_moons = {
-    0: 'red',
-    1: 'blue'
-}
-
-ax[1,1].scatter(
-    x2[:, 0],
-    x2[:, 1],
-    c=pd.Series(aggle_moons.labels_).apply(
-        lambda x: myColor_moons[x]
-    ),
-    alpha=0.7
-)
-
-ax[1,1].set_title('Dataset make_moons: AgglomerativeClustering')
+plt.tight_layout()
 plt.show()
 
-from scipy.cluster.hierarchy import fcluster, dendrogram, linkage
-myLinkage = linkage(x1,method='complete')
-plt.figure(figsize=(20,5))
-dendrogram(myLinkage)
-plt.title('Dataset make_blobs: Dendrogram')
+print('---------------- Dendrogram ----------------')
+
+linkage_blobs = linkage(x_blobs, method='complete')
+plt.figure(figsize=(20, 5))
+dendrogram(linkage_blobs)
+plt.title('make_blobs: Dendrogram (complete linkage)')
 plt.show()
 
-lables = fcluster(myLinkage, 5, criterion='maxclust')
-print(pd.Series(lables).value_counts())
+labels_blobs_tree = fcluster(linkage_blobs, 4, criterion='maxclust')
+print('Số phần tử trong từng cụm của make_blobs:')
+print(pd.Series(labels_blobs_tree).value_counts().sort_index())
 
-
-
-myLinkage_moons = linkage(x2,method='single')
-plt.figure(figsize=(20,5))
-dendrogram(myLinkage_moons)
-plt.title('Dataset make_moons: Dendrogram')
+linkage_moons = linkage(x_moons, method='single')
+plt.figure(figsize=(20, 5))
+dendrogram(linkage_moons)
+plt.title('make_moons: Dendrogram (single linkage)')
 plt.show()
 
-lables_moons = fcluster(myLinkage_moons, 2, criterion='maxclust')
-print(pd.Series(lables_moons).value_counts())
-
+labels_moons_tree = fcluster(linkage_moons, 2, criterion='maxclust')
+print('Số phần tử trong từng cụm của make_moons:')
+print(pd.Series(labels_moons_tree).value_counts().sort_index())
