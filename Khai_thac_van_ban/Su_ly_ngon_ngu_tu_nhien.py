@@ -22,3 +22,6 @@ from nltk.stem import WordNetLemmatizer
 n = WordNetLemmatizer()
 
 print([n.lemmatize(w) for w in result])
+
+
+    
